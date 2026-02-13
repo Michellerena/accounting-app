@@ -1,0 +1,139 @@
+# Python 字节码和缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.python-version
+
+# 虚拟环境
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+.env
+.venv
+virtualenv/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+instance/
+*.db-wal
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.pyc
+*.pyo
+
+# 环境变量和密钥文件
+.env
+.flaskenv
+.env.local
+.env.development
+.env.test
+.env.production
+.env.example
+secrets/
+config_local.py
+
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# 上传文件
+uploads/
+media/
+static/uploads/
+
+# 测试和覆盖率报告
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+test.db
+
+# 构建产物
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# 安装包
+*.whl
+*.tar.gz
+
+# 编辑器临时文件
+*~
+*.swp
+*.swo
+*.swn
+*.bak
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 项目特定文件
+instance/
+.webassets-cache
+.env
+.flaskenv
+
+# 生产环境配置文件
+config.py.bak
+app.db
+db.sqlite3
+
+# 备份文件
+*.bak
+*.backup
+
+# 开发日志
+dev.log
+debug.log
+
+# 忽略所有 .secret 文件
+*.secret
+
+# 忽略密钥文件
+*.pem
+*.key
+*.crt
+
+# 忽略 pytest 相关
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 忽略 Docker 相关
+docker-compose.override.yml
+Dockerfile.dev
+
+# 忽略临时文件
+tmp/
+temp/
+*.tmp
