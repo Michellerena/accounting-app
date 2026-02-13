@@ -1,0 +1,65 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+.display-6 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+}
+
+.modal-header {
+    color: white;
+}
+
+.modal-header.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.modal-header.bg-success {
+    background-color: #198754 !important;
+}
+
+.modal-header.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.btn-sm {
+    margin: 0 2px;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .display-6 {
+        font-size: 1.8rem;
+    }
+    
+    .row.mb-4 .col-md-6 {
+        margin-bottom: 10px;
+    }
+}
