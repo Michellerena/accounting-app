@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- 统计卡片 -->
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">总收入</h5>
+                <h2 id="totalIncome" class="display-6">¥0.00</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">总支出</h5>
+                <h2 id="totalExpense" class="display-6">¥0.00</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">当前余额</h5>
+                <h2 id="balance" class="display-6">¥0.00</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加记录和筛选 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+            <i class="bi bi-plus-circle"></i> 添加记录
+        </button>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-5">
+                <input type="date" class="form-control" id="startDate" placeholder="开始日期">
+            </div>
+            <div class="col-md-5">
+                <input type="date" class="form-control" id="endDate" placeholder="结束日期">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" onclick="filterRecords()">
+                    <i class="bi bi-funnel"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 记录列表 -->
+<div class="card">
+    <div class="card-header">
+        <h5>记账记录</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>类型</th>
+                        <th>分类</th>
+                        <th>描述</th>
+                        <th>金额</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTableBody">
+                    <!-- 记录将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 添加记录模态框 -->
+<div class="modal fade" id="addRecordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="bi bi-plus-circle"></i> 添加记录</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addRecordForm">
+                    <div class="mb-3">
+                        <label class="form-label">类型</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="income" value="income" checked>
+                                <label class="form-check-label text-success" for="income">收入</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="expense" value="expense">
+                                <label class="form-check-label text-danger" for="expense">支出</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">金额</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">分类</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="餐饮">餐饮</option>
+                            <option value="购物">购物</option>
+                            <option value="交通">交通</option>
+                            <option value="住房">住房</option>
+                            <option value="娱乐">娱乐</option>
+                            <option value="医疗">医疗</option>
+                            <option value="教育">教育</option>
+                            <option value="工资">工资</option>
+                            <option value="奖金">奖金</option>
+                            <option value="投资">投资</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">描述</label>
+                        <input type="text" class="form-control" id="description" name="description">
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">日期</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addRecord()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑记录模态框 -->
+<div class="modal fade" id="editRecordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> 编辑记录</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editRecordForm">
+                    <input type="hidden" id="editRecordId">
+                    <div class="mb-3">
+                        <label class="form-label">类型</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="edit_type" id="edit_income" value="income">
+                                <label class="form-check-label text-success" for="edit_income">收入</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="edit_type" id="edit_expense" value="expense">
+                                <label class="form-check-label text-danger" for="edit_expense">支出</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_amount" class="form-label">金额</label>
+                        <div class="input-group">
+                            <span class="input-group-text">¥</span>
+                            <input type="number" class="form-control" id="edit_amount" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_category" class="form-label">分类</label>
+                        <select class="form-select" id="edit_category" required>
+                            <option value="餐饮">餐饮</option>
+                            <option value="购物">购物</option>
+                            <option value="交通">交通</option>
+                            <option value="住房">住房</option>
+                            <option value="娱乐">娱乐</option>
+                            <option value="医疗">医疗</option>
+                            <option value="教育">教育</option>
+                            <option value="工资">工资</option>
+                            <option value="奖金">奖金</option>
+                            <option value="投资">投资</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">描述</label>
+                        <input type="text" class="form-control" id="edit_description">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_date" class="form-label">日期</label>
+                        <input type="date" class="form-control" id="edit_date" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="updateRecord()">更新</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentEditId = null;
+
+// 页面加载时获取记录
+$(document).ready(function() {
+    loadRecords();
+    
+    // 设置默认日期为今天
+    const today = new Date().toISOString().split('T')[0];
+    $('#date').val(today);
+});
+
+// 加载记录
+function loadRecords() {
+    let url = '/api/records';
+    const startDate = $('#startDate').val();
+    const endDate = $('#endDate').val();
+    
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    
+    $.get(url, function(data) {
+        // 更新统计数据
+        $('#totalIncome').text('¥' + data.total_income.toFixed(2));
+        $('#totalExpense').text('¥' + data.total_expense.toFixed(2));
+        $('#balance').text('¥' + data.balance.toFixed(2));
+        
+        // 更新记录表格
+        const tbody = $('#recordsTableBody');
+        tbody.empty();
+        
+        if (data.records.length === 0) {
+            tbody.append('<tr><td colspan="6" class="text-center">暂无记录</td></tr>');
+            return;
+        }
+        
+        data.records.forEach(function(record) {
+            const typeClass = record.type === 'income' ? 'text-success' : 'text-danger';
+            const typeText = record.type === 'income' ? '收入' : '支出';
+            const amountText = (record.type === 'income' ? '+' : '-') + '¥' + record.amount.toFixed(2);
+            const amountClass = record.type === 'income' ? 'text-success' : 'text-danger';
+            
+            const row = `
+                <tr>
+                    <td>${record.date}</td>
+                    <td><span class="badge ${typeClass}">${typeText}</span></td>
+                    <td>${record.category}</td>
+                    <td>${record.description || '-'}</td>
+                    <td class="${amountClass} fw-bold">${amountText}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editRecord(${record.id})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${record.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.append(row);
+        });
+    });
+}
+
+// 筛选记录
+function filterRecords() {
+    loadRecords();
+}
+
+// 添加记录
+function addRecord() {
+    const form = $('#addRecordForm');
+    const data = {
+        type: form.find('input[name="type"]:checked').val(),
+        amount: parseFloat(form.find('#amount').val()),
+        category: form.find('#category').val(),
+        description: form.find('#description').val(),
+        date: form.find('#date').val()
+    };
+    
+    if (!data.amount || data.amount <= 0) {
+        alert('请输入有效的金额');
+        return;
+    }
+    
+    $.ajax({
+        url: '/api/records',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function() {
+            $('#addRecordModal').modal('hide');
+            form[0].reset();
+            $('#date').val(new Date().toISOString().split('T')[0]);
+            loadRecords();
+            alert('记录添加成功');
+        },
+        error: function() {
+            alert('添加失败，请重试');
+        }
+    });
+}
+
+// 编辑记录
+function editRecord(id) {
+    currentEditId = id;
+    // 获取当前记录数据
+    $.get('/api/records', function(data) {
+        const record = data.records.find(r => r.id === id);
+        if (record) {
+            $('#editRecordId').val(record.id);
+            if (record.type === 'income') {
+                $('#edit_income').prop('checked', true);
+            } else {
+                $('#edit_expense').prop('checked', true);
+            }
+            $('#edit_amount').val(record.amount);
+            $('#edit_category').val(record.category);
+            $('#edit_description').val(record.description);
+            $('#edit_date').val(record.date);
+            
+            $('#editRecordModal').modal('show');
+        }
+    });
+}
+
+// 更新记录
+function updateRecord() {
+    const id = $('#editRecordId').val();
+    const data = {
+        type: $('#edit_income').prop('checked') ? 'income' : 'expense',
+        amount: parseFloat($('#edit_amount').val()),
+        category: $('#edit_category').val(),
+        description: $('#edit_description').val(),
+        date: $('#edit_date').val()
+    };
+    
+    if (!data.amount || data.amount <= 0) {
+        alert('请输入有效的金额');
+        return;
+    }
+    
+    $.ajax({
+        url: '/api/records/' + id,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function() {
+            $('#editRecordModal').modal('hide');
+            loadRecords();
+            alert('记录更新成功');
+        },
+        error: function() {
+            alert('更新失败，请重试');
+        }
+    });
+}
+
+// 删除记录
+function deleteRecord(id) {
+    if (confirm('确定要删除这条记录吗？')) {
+        $.ajax({
+            url: '/api/records/' + id,
+            method: 'DELETE',
+            success: function() {
+                loadRecords();
+                alert('记录删除成功');
+            },
+            error: function() {
+                alert('删除失败，请重试');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
